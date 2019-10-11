@@ -26,7 +26,7 @@ module adder (
         io = 7b1001001;
           
       // SUCCESS state
-      // exit this state will pressing io_button[4] to loop through cases again
+      // exit this state by pressing io_button[4] to loop through cases again
       state.SUCCESS:
         out = 8hff;
         io = 7b0110110;
@@ -34,7 +34,7 @@ module adder (
           state.d = state.CASE1;
       
      // Each state below corresponds to each test case
-     // state will check sum and carryout below proceed to next state/case
+     // state will check sum and carryout before proceeding to next state/case
      // if the result is incorrect, fsm will enter ERROR state
      // fsm only enter SUCCESS state if all test cases are correct
       state.CASE1:
