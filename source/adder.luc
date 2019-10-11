@@ -1,0 +1,105 @@
+module adder (
+    input clk,  // clock
+    input rst,  // reset
+    input clkrise, // rising egde from clockdivider (approximately 1 second)
+    input in, // input signal from io_button
+    input result[2], // sum and carryout
+    output out[8], // output to a,b,cin and io_led
+    output io[7] // output to io_segment
+  ) {
+  
+.clk(clk),.rst(rst){
+  fsm state(#INIT(CASE1))={ERROR,CASE1,CASE2,CASE3,CASE4,CASE5,CASE6,CASE7,CASE8,SUCCESS};
+  }
+
+  always {
+    state.d=state.q;
+    out = 8h00;
+    io = 7b0000000;
+    
+    
+    case(state.q) {
+      // ERROR state
+      // exit this state by pressing reset button
+      state.ERROR:
+        out = 8b10101000;
+        io = 7b1001001;
+          
+      // SUCCESS state
+      // exit this state will pressing io_button[4] to loop through cases again
+      state.SUCCESS:
+        out = 8hff;
+        io = 7b0110110;
+        if (in==1)
+          state.d = state.CASE1;
+      
+     // Each state below corresponds to each test case
+     // state will check sum and carryout below proceed to next state/case
+     // if the result is incorrect, fsm will enter ERROR state
+     // fsm only enter SUCCESS state if all test cases are correct
+      state.CASE1:
+        out = 8b00000000;
+        io = 7b0000110;
+        if (clkrise==1 && result==2b00)
+          state.d = state.CASE2;
+        if (clkrise==1 && result!=2b00)
+          state.d = state.ERROR;
+        
+      state.CASE2:
+        out = 8b00000001;
+        io = 7b1011011;
+        if (clkrise==1 && result==2b01)
+          state.d = state.CASE3;
+        if (clkrise==1 && result!=2b01)
+          state.d = state.ERROR;
+
+      state.CASE3:
+        out = 8b00000010;
+        io = 7b1001111;
+        if (clkrise==1 && result==2b01)
+          state.d = state.CASE4;
+        if (clkrise==1 && result!=2b01)
+          state.d = state.ERROR;
+
+      state.CASE4:
+        out = 8b00000011;
+        io = 7b1100110;
+        if (clkrise==1 && result==2b10)
+          state.d = state.CASE5;
+        if (clkrise==1 && result!=2b10)
+          state.d = state.ERROR;
+        
+      state.CASE5:
+        out = 8b00000100;
+        io = 7b1101101;
+        if (clkrise==1 && result==2b01)
+          state.d = state.CASE6;
+        if (clkrise==1 && result!=2b01)
+          state.d = state.ERROR;
+        
+      state.CASE6:
+        out = 8b00000101;
+        io = 7b1111101;
+        if (clkrise==1 && result==2b10)
+          state.d = state.CASE7;
+        if (clkrise==1 && result!=2b10)
+          state.d = state.ERROR;
+        
+      state.CASE7:
+        out = 8b00000110;
+        io = 7b0000111;
+        if (clkrise==1 && result==2b10)
+          state.d = state.CASE8;
+        if (clkrise==1 && result!=2b10)
+          state.d = state.ERROR;
+        
+      state.CASE8:
+        out = 8b00000111;
+        io = 7b1111111;
+        if (clkrise==1 && result==2b11)
+          state.d = state.SUCCESS;
+        if (clkrise==1 && result!=2b11)
+          state.d = state.ERROR;
+    }
+  }
+}

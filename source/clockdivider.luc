@@ -1,0 +1,13 @@
+module clockdivider (
+    input clk,  // clock
+    input rst,  // reset
+    output out
+  ) {
+  
+  dff counter[26](.clk(clk),.rst(rst)); 
+  
+  always {
+    out = counter.q[25];
+    counter.d = counter.q + 1;
+  }
+}
